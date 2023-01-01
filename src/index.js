@@ -1,6 +1,5 @@
 import ImgApiService from './img-service';
 import photoCardTpl from './templates/photo-card.hbs';
-// import bigImgTpl from './templates/big-img.hbs';
 
 import {
   notificationSuccess,
@@ -10,14 +9,28 @@ import {
 } from './notification.js';
 
 const searchFormEl = document.querySelector('#search-form');
-const loadMoreEl = document.querySelector('[data-action="load-more"]');
 const galleryEl = document.querySelector('.gallery');
-const goUpEl = document.querySelector('#go-up');
 const backdropEl = document.querySelector('.backdrop');
 const modalCloseBtnEl = document.querySelector('.modal-close-btn');
 const modalEl = document.querySelector('.modal');
+const targetEl = document.querySelector('.target-element');
+const btnUp = document.querySelector('.btn-up');
 
 const imgApiService = new ImgApiService();
+
+const options = {
+  rootMargin: '200px',
+};
+
+const observer = new IntersectionObserver(onEntry, options);
+
+observer.observe(targetEl);
+
+searchFormEl.addEventListener('submit', onSearch);
+galleryEl.addEventListener('click', openModal);
+modalCloseBtnEl.addEventListener('click', closeModal);
+backdropEl.addEventListener('click', closeModalByClickBackdrop);
+btnUp.addEventListener('click', goTopPage);
 
 function onSearch(event) {
   event.preventDefault();
@@ -28,7 +41,6 @@ function onSearch(event) {
     if (photoCard.length !== 0) {
       clearImageContainer();
       renderPhotoCard(photoCard);
-      bottomBtnVisible();
       notificationSuccess();
       return;
     }
@@ -36,16 +48,8 @@ function onSearch(event) {
   });
 }
 
-function onLoadMore() {
-  imgApiService.fetchImages().then(photoCard => {
-    if (photoCard.length !== 0) {
-      renderPhotoCard(photoCard);
-      notificationSuccessLoadMore();
-      setTimeout(scrollView, 1000);
-      return;
-    }
-    notificationFailure();
-  });
+function btnUpVisible() {
+  btnUp.classList.remove('is-hidden');
 }
 
 function renderPhotoCard(card) {
@@ -64,13 +68,6 @@ function clearImageContainer() {
   galleryEl.innerHTML = '';
 }
 
-function scrollView() {
-  loadMoreEl.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  });
-}
-
 function goTopPage() {
   notificationGoUp();
   window.scrollTo({
@@ -78,11 +75,6 @@ function goTopPage() {
     right: 0,
     behavior: 'smooth',
   });
-}
-
-function bottomBtnVisible() {
-  loadMoreEl.classList.remove('is-hidden');
-  goUpEl.classList.remove('is-hidden');
 }
 
 function openModal(event) {
@@ -114,9 +106,18 @@ function closeModalByClickBackdrop(event) {
   return;
 }
 
-searchFormEl.addEventListener('submit', onSearch);
-loadMoreEl.addEventListener('click', onLoadMore);
-goUpEl.addEventListener('click', goTopPage);
-galleryEl.addEventListener('click', openModal);
-modalCloseBtnEl.addEventListener('click', closeModal);
-backdropEl.addEventListener('click', closeModalByClickBackdrop);
+function onEntry(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && imgApiService.query !== '') {
+      imgApiService.fetchImages().then(photoCard => {
+        if (photoCard.length !== 0) {
+          renderPhotoCard(photoCard);
+          notificationSuccessLoadMore();
+          btnUpVisible();
+          return;
+        }
+        notificationFailure();
+      });
+    }
+  });
+}

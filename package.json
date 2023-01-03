@@ -2,10 +2,10 @@
   "name": "parcel-project-template",
   "version": "2.0.0",
   "description": "",
-  "homepage": "https://pavel-se47.github.io/47-projects-js-vol1-task12-countries",
+  "homepage": "https://pavel-se47.github.io/47-projects-js-vol1-task13-image-finder",
   "scripts": {
     "start": "parcel src/*.html",
-    "build": "parcel build src/*.html --public-url /47-projects-js-vol1-task12-countries/",
+    "build": "parcel build src/*.html --public-url /47-projects-js-vol1-task13-image-finder/",
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build"
   },

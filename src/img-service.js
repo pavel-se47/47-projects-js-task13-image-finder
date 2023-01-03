@@ -4,8 +4,19 @@ export default class ImgApiService {
   }
 
   fetchImages() {
-    const KEY = '30307738-59afbcdeb2729193aa806c9ae';
-    const url = `https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=${this.searchQuery}&page=${this.page}&per_page=12&key=${KEY}`;
+    const BASE_URL = 'https://pixabay.com/api';
+
+    const searchParams = new URLSearchParams({
+      key: '30307738-59afbcdeb2729193aa806c9ae',
+      q: this.searchQuery,
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: 'true',
+      page: this.page,
+      per_page: 40,
+    });
+
+    const url = `${BASE_URL}/?${searchParams}`;
 
     return fetch(url)
       .then(response => response.json())

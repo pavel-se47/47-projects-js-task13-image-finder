@@ -3,7 +3,7 @@ export default class ImgApiService {
     (this.searchQuery = ''), (this.page = 1);
   }
 
-  fetchImages() {
+  async fetchImages() {
     const BASE_URL = 'https://pixabay.com/api';
 
     const searchParams = new URLSearchParams({
@@ -13,17 +13,21 @@ export default class ImgApiService {
       orientation: 'horizontal',
       safesearch: 'true',
       page: this.page,
-      per_page: 40,
+      per_page: 20,
     });
 
     const url = `${BASE_URL}/?${searchParams}`;
 
-    return fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        this.incrementPage();
-        return data.hits;
-      });
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.hits;
+
+    // return fetch(url)
+    // .then(response => response.json())
+    // .then(data => {
+    //   this.incrementPage();
+    //   return data.hits;
+    // });
   }
 
   get query() {

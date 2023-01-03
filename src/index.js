@@ -41,6 +41,7 @@ function onSearch(event) {
     if (photoCard.length !== 0) {
       clearImageContainer();
       renderPhotoCard(photoCard);
+      imgApiService.incrementPage();
       notificationSuccess();
       return;
     }
@@ -112,6 +113,7 @@ function onEntry(entries) {
       imgApiService.fetchImages().then(photoCard => {
         if (photoCard.length !== 0) {
           renderPhotoCard(photoCard);
+          imgApiService.incrementPage();
           notificationSuccessLoadMore();
           btnUpVisible();
           return;
